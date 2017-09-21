@@ -1,6 +1,8 @@
-# mwapi
+# yamwapi
 
 A simple and modern Python wrapper for the [MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page).
+
+(Yes, yet another.)
 
 Use me to talk to Wikipedia.
 
@@ -21,9 +23,9 @@ and, as such, is in active development and production use.
 Fetching the Wikitext of a page requires a single method:
 
 ```python
-import mwapi
+import yamwapi
 
-api = mwapi.MediaWikiAPI('https://en.wikipedia.org/w/api.php', 'mwapi UA')
+api = yamwapi.MediaWikiAPI('https://en.wikipedia.org/w/api.php', 'yamwapi UA')
 print api.get_page_contents(title = 'Wikipedia')
 ```
 
@@ -33,3 +35,9 @@ Other methods and options can be accessed via a lower level API:
 api.options.maxlag = 10
 print api.parse({'text': '{{ cn }}', 'contentmodel': 'wikitext'})
 ```
+
+## But why another library?
+
+If you're considering this library, also be sure to have a look at
+[mwapi](https://pypi.org/project/mwapi/), which is similar, but requires
+Python 3.

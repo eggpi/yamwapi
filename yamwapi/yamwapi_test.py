@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-import mwapi
+import yamwapi
 
 import mock
 import unittest
@@ -10,7 +10,7 @@ class MediaWikiAPITest(unittest.TestCase):
     TEST_USER_AGENT = 'user agent'
 
     def setUp(self):
-        self._api = mwapi.MediaWikiAPI(self.TEST_API_URL, self.TEST_USER_AGENT)
+        self._api = yamwapi.MediaWikiAPI(self.TEST_API_URL, self.TEST_USER_AGENT)
 
     def test_default_options(self):
         self.assertEqual(self._api.options.maxlag, 5)
@@ -53,7 +53,7 @@ class MediaWikiAPITest(unittest.TestCase):
 
     def test_retry_after_once(self):
         with mock.patch.object(self._api._session, 'post') as mock_post:
-            with mock.patch.object(mwapi.time, 'sleep') as mock_sleep:
+            with mock.patch.object(yamwapi.time, 'sleep') as mock_sleep:
                 mock_retry_after_response = mock.MagicMock()
                 mock_retry_after_response.headers = {'Retry-After': '3.5'}
                 mock_post.side_effect = [
@@ -65,19 +65,19 @@ class MediaWikiAPITest(unittest.TestCase):
     def test_retry_after_too_many(self):
         self._api.options.max_retries_maxlag = 1
         with mock.patch.object(self._api._session, 'post') as mock_post:
-            with mock.patch.object(mwapi.time, 'sleep') as mock_sleep:
+            with mock.patch.object(yamwapi.time, 'sleep') as mock_sleep:
                 mock_retry_after_response = mock.MagicMock()
                 mock_retry_after_response.headers = {'Retry-After': '3.5'}
                 mock_post.side_effect = [
                     mock_retry_after_response, mock_retry_after_response,
                     mock.MagicMock()]
-                with self.assertRaises(mwapi.MediaWikiAPIError):
+                with self.assertRaises(yamwapi.MediaWikiAPIError):
                     self._api.parse({'text': 'x'})
                 mock_sleep.assert_called_once_with(3.5)
 
     def test_cache_maxlag_retry(self):
         with mock.patch.object(self._api._session, 'post') as mock_post:
-            with mock.patch.object(mwapi.time, 'sleep') as mock_sleep:
+            with mock.patch.object(yamwapi.time, 'sleep') as mock_sleep:
                 mock_maxlag_response = mock.MagicMock()
                 mock_maxlag_response.json.return_value = {
                     'error': {
@@ -93,20 +93,20 @@ class MediaWikiAPITest(unittest.TestCase):
     def test_no_retries_fail(self):
         self._api.options.max_retries_maxlag = 0
         with mock.patch.object(self._api._session, 'post') as mock_post:
-            with mock.patch.object(mwapi.time, 'sleep') as mock_sleep:
+            with mock.patch.object(yamwapi.time, 'sleep') as mock_sleep:
                 mock_retry_after_response = mock.MagicMock()
                 mock_retry_after_response.headers = {'Retry-After': '3.5'}
                 mock_post.side_effect = [
                     mock_retry_after_response, mock_retry_after_response,
                     mock.MagicMock()]
-                with self.assertRaises(mwapi.MediaWikiAPIError):
+                with self.assertRaises(yamwapi.MediaWikiAPIError):
                     self._api.parse({'text': 'x'})
                 mock_sleep.assert_not_called()  # just raise the exception
 
     def test_no_retries_success(self):
         self._api.options.max_retries_maxlag = 0
         with mock.patch.object(self._api._session, 'post') as mock_post:
-            with mock.patch.object(mwapi.time, 'sleep') as mock_sleep:
+            with mock.patch.object(yamwapi.time, 'sleep') as mock_sleep:
                 mock_post.return_value = mock.MagicMock()
                 self._api.parse({'text': 'x'})
                 mock_sleep.assert_not_called()
