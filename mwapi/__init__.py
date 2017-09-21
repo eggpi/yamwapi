@@ -1,0 +1,1 @@
+from mwapi import *
