@@ -9,9 +9,9 @@ Use me to talk to Wikipedia.
 This library particularly suited for large batch jobs that perform many queries
 to Wikipedia. Features include:
 
-✔ Simple (but relatively low-level) API
-✔ Persistent connections by default
-✔ Uses POST for requests, allowing large payloads
+* Simple (but relatively low-level) API
+* Persistent connections by default
+* Uses POST for requests, allowing large payloads
 
 This library is used by [Citation Hunt](https://tools.wmflabs.org/citationhunt),
 and, as such, is in active development and production use.
