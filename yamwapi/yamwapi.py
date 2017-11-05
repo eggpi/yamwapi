@@ -28,6 +28,11 @@ class MediaWikiAPIOptions(object):
         self._params = {'format': 'json', 'utf8': ''}
 
         self._dict_key_to_property(
+            self._options, 'http_retries',
+            'max retries for API requests that hit HTTP/connection errors.')
+        self.http_retries = 3
+
+        self._dict_key_to_property(
             self._options, 'max_retries_maxlag',
             'max retries for API requests that hit maxlag limits')
         self.max_retries_maxlag = 3
@@ -50,17 +55,28 @@ class MediaWikiAPIOptions(object):
 class MediaWikiAPI(object):
     def __init__(self, url, user_agent):
         self._url = url
-        self._session = requests.Session()
-        self._headers = {
-            'User-Agent': user_agent,
-        }
+        self._user_agent = user_agent
+        self._session = None
         self.options = MediaWikiAPIOptions()
+
+    @property
+    def session(self):
+        if self._session is None:
+            self._session = requests.Session()
+            adapter = requests.adapters.HTTPAdapter(
+                max_retries = self.options.http_retries)
+            self._session.mount('http://', adapter)
+            self._session.mount('https://', adapter)
+            self._session.headers.update({
+                'User-Agent': self._user_agent,
+            })
+        return self._session
 
     def _do_request(self, params):
         response = None
         retries = self.options.max_retries_maxlag
         for r in range(retries + 1):
-            res = self._session.post(self._url, params, headers = self._headers)
+            res = self.session.post(self._url, params)
             if 'Retry-After' in res.headers:
                 if r < retries:
                     sleep_s = float(res.headers['Retry-After'])
