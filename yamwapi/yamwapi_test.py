@@ -1,11 +1,9 @@
-from __future__ import unicode_literals
-
 import yamwapi
 
 import mock
 import requests_mock
 import unittest
-import urlparse
+import urllib.parse
 
 class MediaWikiAPITest(unittest.TestCase):
     TEST_API_URL = 'http://w.org/api.php'
@@ -21,10 +19,10 @@ class MediaWikiAPITest(unittest.TestCase):
 
     def test_session_options(self):
         self._api.options.http_retries = 5
-        self.assertEquals(
+        self.assertEqual(
             self._api.session.adapters['http://'].max_retries.total,
             self._api.options.http_retries)
-        self.assertEquals(
+        self.assertEqual(
             self._api.session.adapters['https://'].max_retries.total,
             self._api.options.http_retries)
 
@@ -40,11 +38,11 @@ class MediaWikiAPITest(unittest.TestCase):
         }
         with requests_mock.mock() as m:
             m.post(self.TEST_API_URL, json = {})
-            self.assertEquals(next(self._api.query({'pageids': '12345'})), {})
+            self.assertEqual(next(self._api.query({'pageids': '12345'})), {})
             request = m.request_history[0]
-            sent = urlparse.parse_qsl(request.text, keep_blank_values = True)
-            self.assertEquals(dict(sent), expected_request)
-            self.assertEquals(
+            sent = urllib.parse.parse_qsl(request.text, keep_blank_values = True)
+            self.assertEqual(dict(sent), expected_request)
+            self.assertEqual(
                 request.headers['User-Agent'], self.TEST_USER_AGENT)
 
     def test_simple_parse_with_options(self):
@@ -58,11 +56,11 @@ class MediaWikiAPITest(unittest.TestCase):
         }
         with requests_mock.mock() as m:
             m.post(self.TEST_API_URL, json = {})
-            self.assertEquals(self._api.parse({'text': '{{ cn }}'}), {})
+            self.assertEqual(self._api.parse({'text': '{{ cn }}'}), {})
             request = m.request_history[0]
-            sent = urlparse.parse_qsl(request.text, keep_blank_values = True)
+            sent = urllib.parse.parse_qsl(request.text, keep_blank_values = True)
             self.assertTrue(dict(sent), expected_request)
-            self.assertEquals(
+            self.assertEqual(
                 request.headers['User-Agent'], self.TEST_USER_AGENT)
 
     def test_retry_after_once(self):
@@ -74,7 +72,7 @@ class MediaWikiAPITest(unittest.TestCase):
                     mock_retry_after_response, mock.MagicMock()]
                 self._api.parse({'text': 'x'})
                 mock_sleep.assert_called_once_with(3.5)
-                self.assertEquals(mock_post.call_count, 2)
+                self.assertEqual(mock_post.call_count, 2)
 
     def test_retry_after_too_many(self):
         self._api.options.max_retries_maxlag = 1
@@ -102,7 +100,7 @@ class MediaWikiAPITest(unittest.TestCase):
                     mock_maxlag_response, mock.MagicMock()]
                 self._api.parse({'text': 'x'})
                 mock_sleep.assert_called_once_with(3.5)
-                self.assertEquals(mock_post.call_count, 2)
+                self.assertEqual(mock_post.call_count, 2)
 
     def test_no_retries_fail(self):
         self._api.options.max_retries_maxlag = 0

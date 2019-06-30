@@ -1,1 +1,1 @@
-from yamwapi import *
+from .yamwapi import *

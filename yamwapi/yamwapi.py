@@ -134,7 +134,7 @@ class MediaWikiAPI(object):
             raise MediaWikiAPIError('Either title or pageid must be present')
         contents = ''
         for response in self.query(params):
-            for page in response['query']['pages'].values():
+            for page in list(response['query']['pages'].values()):
                 contents += page['revisions'][0]['*']
         return contents
 
@@ -144,4 +144,4 @@ if __name__ == '__main__':
         'https://en.wikipedia.org/w/api.php',
         'citationhunt (https://tools.wmflabs.org/citationhunt)')
     api.options.maxlag = 10
-    print api.parse({'text': '{{ cn }}', 'contentmodel': 'wikitext'})
+    print(api.parse({'text': '{{ cn }}', 'contentmodel': 'wikitext'}))
