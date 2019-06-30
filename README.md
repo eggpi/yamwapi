@@ -39,5 +39,5 @@ print api.parse({'text': '{{ cn }}', 'contentmodel': 'wikitext'})
 ## But why another library?
 
 If you're considering this library, also be sure to have a look at
-[mwapi](https://pypi.org/project/mwapi/), which is similar, but requires
-Python 3.
+[mwapi](https://pypi.org/project/mwapi/), which is similar, but slightly lower
+level.
